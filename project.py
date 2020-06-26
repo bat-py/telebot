@@ -1,55 +1,45 @@
 import telebot
-import time
 
-bot = telebot.TeleBot('1018761895:AAE9zGMHZxYZlC_6kyRLAmTBC0Oubpp-QUQ')
-key_yn = telebot.types.ReplyKeyboardMarkup(True, True)
-key_yn.row('Yes', 'No')
+token = '1018761895:AAE9zGMHZxYZlC_6kyRLAmTBC0Oubpp-QUQ'
+bot = telebot.TeleBot(token)
 
-key_loop = telebot.types.ReplyKeyboardMarkup(True, True, True)
-key_loop.row("Yes ofcourse", 'No no')
 
 @bot.message_handler(commands=['start'])
-def com_start(message):
-    bot.send_message(message.chat.id, 'Are you happy?', reply_markup=key_yn)
+def running(message):
+    bot.send_message(message.chat.id, 'Please send me some kind of file')
+
+@bot.message_handler(content_types=['photo'])
+def pho(message):
+    a = []
+    # ass = message.text.get_id
+    for i in message.photo:
+        a.append(i)
+    bot.send_message(message.chat.id, a[2].file_id)
 
 
-@bot.message_handler(commands=['loop'])
-def loop(message):
-    bot.send_message(message.chat.id, 'Do you want sex?', reply_markup=key_loop)
+@bot.message_handler(content_types=['video'])
+def pho(message):
+    # a = []
+    # for i in message.photo:
+    #     a.append(i)
+    a = message.video
+    print(a)
+    bot.send_video(message.chat.id, 'BAACAgIAAxkBAAIB6V72M7Q6uDSUL4J-R2ADsjq8Xb6BAALVCAAC5lEoS5Uq6-79GVU6GgQ')
 
+@bot.message_handler(content_types=['document', 'audio', 'sticker', 'video', 'voice', 'location'])
+def doc_id(message):
+    id = "I don't understand"
+    ids = [message.document, message.audio, message.sticker, message.video, message.voice, message.location]
 
-@bot.message_handler(commands=['inline'])
-def inline(message):
-    inline_keyboard = telebot.types.InlineKeyboardMarkup()
-    inline_keyboard.add(telebot.types.InlineKeyboardButton('Sex', callback_data='sex_id'))
-    inline_keyboard.add(telebot.types.InlineKeyboardButton('Drugs', callback_data='drug_id'))
-    inline_keyboard.add(telebot.types.InlineKeyboardButton('Hacking', callback_data='hack_id'))
+    for code in ids:
+        try:
+            code.file_id
+        except AttributeError:
+            pass
+        else:
+            id = code
 
-    bot.send_message(message.chat.id, 'What do you want?', reply_markup=inline_keyboard)
-
-
-@bot.callback_query_handler(func=lambda call: True)
-def answer(call):
-    bot.answer_callback_query(callback_query_id=call.id, )
-
-    if call.data == 'sex_id':
-        answer =
-
-
-
-
-@bot.message_handler(content_types=['text'])
-def answer(message):
-    if message.text == 'Yes':
-        bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAL5IV70q_zT7PexzhgRZQ7FlE45maLjAAKLVAACns4LAAGK48iBX6K11xoE')
-    elif message.text == 'No':
-        bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAL5F170ikq3SsPNjqA4Y4eIyIyYIxgoAAJwVAACns4LAAEK62yG_OKNQxoE')
-    elif message.text == 'Yes ofcourse':
-        bot.send_sticker(message.chat.id, 'CAACAgQAAxkBAAL5rV71vND7-NPqzB-IUQMe9srSHGujAALyBAAC8yghBN2xztTxPWqOGgQ')
-    elif message.text == 'No no':
-        bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAL5sV71vSz6UdfzNrRgbCQI8OlC9s4jAAJBAANEDc8XctX78YrX-ZQaBA')
-
-
+    bot.send_message(message.chat.id, id.file_id)
 
 if __name__ == '__main__':
     bot.polling()
