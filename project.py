@@ -11,20 +11,12 @@ def running(message):
 @bot.message_handler(content_types=['photo'])
 def pho(message):
     a = []
-    # ass = message.text.get_id
     for i in message.photo:
         a.append(i)
-    bot.send_message(message.chat.id, a[2].file_id)
 
+    size = str(round(float(a[2].file_size/1000), 1))
+    bot.send_message(message.chat.id, 'File ID:\n'+a[2].file_id+'\n\nFile size:\n'+size+' kb')
 
-@bot.message_handler(content_types=['video'])
-def pho(message):
-    # a = []
-    # for i in message.photo:
-    #     a.append(i)
-    a = message.video
-    print(a)
-    bot.send_video(message.chat.id, 'BAACAgIAAxkBAAIB6V72M7Q6uDSUL4J-R2ADsjq8Xb6BAALVCAAC5lEoS5Uq6-79GVU6GgQ')
 
 @bot.message_handler(content_types=['document', 'audio', 'sticker', 'video', 'voice', 'location'])
 def doc_id(message):
@@ -39,7 +31,8 @@ def doc_id(message):
         else:
             id = code
 
-    bot.send_message(message.chat.id, id.file_id)
+    size = str(round(float(id.file_size/1000), 1))
+    bot.send_message(message.chat.id, 'File ID:\n'+id.file_id+'\n\nFile size:\n'+size+' kb')
 
 if __name__ == '__main__':
     bot.polling()
