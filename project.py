@@ -42,12 +42,14 @@ def main_keyboard(message):
 #Кнопка:
 def uzcard_to_qiwi(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
-    pass
+    if check_exist_uzcard_qiwi(message):
+        bot.send_message(message.chat.id, 'hello')
 
 #Кнопка:
 def qiwi_to_uzcard(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
-    pass
+    if check_exist_uzcard_qiwi(message):
+        bot.send_message(message.chat.id, 'bay')
 
 #Кнопка: адреса моих кошельков
 def requisites(message):
@@ -86,7 +88,7 @@ def after_plus_uzcard(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     if message.text.strip().isdigit() and len(message.text.strip()) == 16:
         MemberInfo(message.chat.id, uzcard=message.text.strip()).add_uzcard()
-        key = inline_keyboard_creator(message, ['main_menu'])
+        key = inline_keyboard_creator(message, ['main_menu', 'add_more'])
         bot.send_message(message.chat.id, lang['succes_uzcard'], reply_markup=key)
 
     elif  message.text.strip().isdigit() and len(message.text.strip()) != 16:
@@ -100,7 +102,7 @@ def after_plus_qiwi(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     if message.text.strip().isdigit() and len(message.text.strip()) == 12:
         MemberInfo(message.chat.id, qiwi=message.text.strip()).add_qiwi()
-        key = inline_keyboard_creator(message, ['main_menu'])
+        key = inline_keyboard_creator(message, ['main_menu', 'add_more'])
         bot.send_message(message.chat.id, lang['succes_qiwi'], reply_markup=key)
     elif message.text.startswith('+') and message.text[1:].strip().isdigit() and len(message.text[1:].strip()) == 12:
         MemberInfo(message.chat.id, qiwi=message.text.strip()[1:]).add_qiwi()
@@ -110,7 +112,22 @@ def after_plus_qiwi(message):
         msg = bot.send_message(message.chat.id, lang['error_num'])
         bot.register_next_step_handler(msg, after_plus_qiwi)
 
-
+def check_exist_uzcard_qiwi(message):
+    lang = template[MemberInfo(message.chat.id).get_lang()]
+    if MemberInfo(message.chat.id).get_uzcard() and MemberInfo(message.chat.id).get_qiwi():
+        return True
+    elif MemberInfo(message.chat.id).get_uzcard() and not MemberInfo(message.chat.id).get_qiwi():
+        key = inline_keyboard_creator(message, ['add_qiwi'])
+        bot.send_message(message.chat.id, lang['doesnt_exist_qiwi'], reply_markup=key)
+        return False
+    elif not MemberInfo(message.chat.id).get_uzcard() and MemberInfo(message.chat.id).get_qiwi():
+        key = inline_keyboard_creator(message, ['add_uzcard'])
+        bot.send_message(message.chat.id, lang['doesnt_exist_uzcard'], reply_markup=key)
+        return False
+    else:
+        key = inline_keyboard_creator(message, ['add_all'])
+        bot.send_message(message.chat.id, lang['doesnt_exist_all'], reply_markup=key)
+        return False
 
 
 
@@ -151,6 +168,10 @@ def choice(call):
         lang = template[MemberInfo(call.message.chat.id).get_lang()]
         MemberInfo(call.message.chat.id).del_uzcard_qiwi()
         bot.answer_callback_query(call.id, lang['after_del'])
+        requisites(call.message)
+    elif call.data == 'add_all' or call.data == 'add_uzcard' or call.data == 'add_qiwi':
+        requisites(call.message)
+    elif call.data == 'add_more':
         requisites(call.message)
 
 
