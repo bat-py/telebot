@@ -13,7 +13,7 @@ class MemberInfo:
         self.qiwi = str(qiwi)
         self.connect = sqlite3.connect('members.db')
         self.cursor = self.connect.cursor()
-
+        self.non = None
 #Methods for add data
     def add_id(self):
         self.cursor.execute(f"INSERT INTO members_info(id) VALUES({self.id});")
@@ -59,12 +59,18 @@ class MemberInfo:
 
     def get_uzcard(self):
         self.cursor.execute("SELECT uzcard FROM members_info WHERE id = (?);", (self.id,))
-        return self.cursor.fetchone()
+        return self.cursor.fetchone()[0]
 
     def get_qiwi(self):
         self.cursor.execute("SELECT qiwi FROM members_info WHERE id = (?);", (self.id,))
-        self.connect.commit()
+        return self.cursor.fetchone()[0]
 
 #delete members
     def del_mem(self):
         self.cursor.execute("DELETE FROM members_info WHERE id = (?);", (self.id,))
+        self.connect.commit()
+
+
+    def del_uzcard_qiwi(self):
+        self.cursor.execute("UPDATE members_info SET uzcard = (?), qiwi = (?) WHERE id = (?)", (None, None, self.id))
+        self.connect.commit()

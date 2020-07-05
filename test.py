@@ -14,7 +14,3 @@
 #
 # if __name__ == "__main__":
 #     bot.polling()
-
-def asss(*args):
-
-asss([1,2,324.1,21315,23], [23,24,123])
