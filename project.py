@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import telebot
 import json
 from sql import MemberInfo
