@@ -1,3 +1,3 @@
 #!/bin/bash
-source /root/telebot/venv/bin/activate
-python project.py
+source /home/batpy/telebot/venv/bin/activate
+python /home/batpy/telebot/project.py
