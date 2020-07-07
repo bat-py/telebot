@@ -1,3 +1,3 @@
 #!/bin/bash
-source /root/telebot/venv/bin/activate
+source /home/crow/PycharmProjects/telebot/venv/bin/activate
 python project.py
