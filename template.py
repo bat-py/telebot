@@ -1,3 +1,4 @@
+import json
 #All answers template
 template = {
     'rus'     : {

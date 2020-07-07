@@ -1,12 +1,11 @@
 import telebot
-import time
+import json
 from sql import MemberInfo
-from template import template
+import random
 
 #token
 token = '1018761895:AAE9zGMHZxYZlC_6kyRLAmTBC0Oubpp-QUQ'
 bot = telebot.TeleBot(token)
-
 
 #Reply_Keyboard_Creator
 def reply_keyboard_creator(message, *args: list, one_type_keyboard: bool = None,):   # каждый элемент args это одна строка: [], [], [] - создается 3 строки и каждые элементы этих трех массивов станут как кнопка
@@ -31,25 +30,33 @@ def inline_keyboard_creator(message, *args):
         keyboard.row(*row_buttons)
     return keyboard
 
-
-
 #Main_menu keyboard
 def main_keyboard(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     keyboard = reply_keyboard_creator(message, ['uzcard to qiwi'], ['qiwi to uzcard'], ['requisites' , 'rate'])
-    bot.send_message(message.chat.id, lang['main_menu'], reply_markup=keyboard)
+    bot.send_message(message.chat.id, lang['main_menu'], reply_markup=keyboard, parse_mode='html')
 
-#Кнопка:
+#Кнопка: Отдать с Uzcard и получать на Qiwi
 def uzcard_to_qiwi(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
+    data = MemberInfo(message.chat.id)
     if check_exist_uzcard_qiwi(message):
-        bot.send_message(message.chat.id, 'hello')
+        check_id_application(message)
+        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()}\n{lang['from']}  UzCard\n{lang['to']}  Qiwi RUB\nUzCard:  {data.get_uzcard()}\nQiwi:  +{data.get_qiwi()}"
+        key = inline_keyboard_creator(message, ['sum_from_uzcard'], ['rub_to_qiwi'], ['cancel'])
+        bot.send_message(message.chat.id, msg, reply_markup=key)
 
-#Кнопка:
+#Кнопка: Отдать с Qiwi и получать на Uzcard
 def qiwi_to_uzcard(message):
+
     lang = template[MemberInfo(message.chat.id).get_lang()]
+    data = MemberInfo(message.chat.id)
     if check_exist_uzcard_qiwi(message):
-        bot.send_message(message.chat.id, 'bay')
+        check_id_application(message)
+        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()}\n{lang['from']} Qiwi RUB\n{lang['to']} UzCard\nQiwi:  +{data.get_qiwi()}\nUZCard:  {data.get_uzcard()}"
+        key = inline_keyboard_creator(message, ['rub_from_qiwi'],['sum_to_uzcard'], ['cancel'])
+        bot.send_message(message.chat.id, msg, reply_markup=key)
+
 
 #Кнопка: адреса моих кошельков
 def requisites(message):
@@ -79,9 +86,8 @@ def requisites(message):
 #Кнопка: Курс
 def rate(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
-    pass
-
-
+    msg = f"{lang['selling_rate']}\n1 Qiwi RUB = {rates[0]} UZS\n\n{lang['buying_rate']}\n1 Qiwi RUB = {rates[1]} UZS"
+    bot.send_message(message.chat.id, msg)
 
 #Other functions
 def after_plus_uzcard(message):
@@ -90,14 +96,12 @@ def after_plus_uzcard(message):
         MemberInfo(message.chat.id, uzcard=message.text.strip()).add_uzcard()
         key = inline_keyboard_creator(message, ['main_menu', 'add_more'])
         bot.send_message(message.chat.id, lang['succes_uzcard'], reply_markup=key)
-
     elif  message.text.strip().isdigit() and len(message.text.strip()) != 16:
         msg = bot.send_message(message.chat.id, lang['error_uzcard_count_num'])
         bot.register_next_step_handler(msg, after_plus_uzcard)
     else:
-        msg = bot.send_message(message.chat.id, lang['error_num'])
+        msg = bot.send_message(message.chat.id, lang['error_num_uzcard'])
         bot.register_next_step_handler(msg, after_plus_uzcard)
-
 def after_plus_qiwi(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     if message.text.strip().isdigit() and len(message.text.strip()) == 12:
@@ -108,10 +112,15 @@ def after_plus_qiwi(message):
         MemberInfo(message.chat.id, qiwi=message.text.strip()[1:]).add_qiwi()
         key = inline_keyboard_creator(message, ['main_menu'])
         bot.send_message(message.chat.id, lang['succes_qiwi'], reply_markup=key)
-    else:
-        msg = bot.send_message(message.chat.id, lang['error_num'])
+    elif message.text.strip().isdigit() and len(message.text.strip()) != 12:
+        msg = bot.send_message(message.chat.id, lang['error_qiwi_count_num'])
         bot.register_next_step_handler(msg, after_plus_qiwi)
-
+    elif message.text.startswith('+') and message.text[1:].strip().isdigit() and len(message.text[1:].strip()) != 12:
+        msg = bot.send_message(message.chat.id, lang['error_qiwi_count_num'])
+        bot.register_next_step_handler(msg, after_plus_qiwi)
+    else:
+        msg = bot.send_message(message.chat.id, lang['error_num_qiwi'])
+        bot.register_next_step_handler(msg, after_plus_qiwi)
 def check_exist_uzcard_qiwi(message):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     if MemberInfo(message.chat.id).get_uzcard() and MemberInfo(message.chat.id).get_qiwi():
@@ -128,6 +137,17 @@ def check_exist_uzcard_qiwi(message):
         key = inline_keyboard_creator(message, ['add_all'])
         bot.send_message(message.chat.id, lang['doesnt_exist_all'], reply_markup=key)
         return False
+def check_id_application(message):
+    id_working_application = MemberInfo(message.chat.id).get_id_working_application()
+    if not id_working_application:
+        id_application = random.randint(100000, 999999)
+        check_exist = MemberInfo(message.chat.id, id_application=id_application).get_id_application()
+        if not check_exist:
+            MemberInfo(message.chat.id, id_application=id_application).add_working_application()
+        else:
+            check_id_application(message)
+
+
 
 
 
@@ -148,6 +168,7 @@ def after_start(message):
     lang_buttons_2 = telebot.types.InlineKeyboardButton('O\'zbekcha 🇺🇿', callback_data='uz1')
     lang_buttons.row(lang_buttons_1, lang_buttons_2)
     msg = bot.send_message(message.chat.id, 'Пожалуйста выберите язык', reply_markup=lang_buttons)
+
 
 
 #handler callback
@@ -173,6 +194,9 @@ def choice(call):
         requisites(call.message)
     elif call.data == 'add_more':
         requisites(call.message)
+    elif call.data == 'cancel':
+        main_keyboard(call.message)
+
 
 
 
@@ -200,8 +224,9 @@ def text_handler(message):
 
 
 
-
-
-
 if __name__ == "__main__":
+    with open('template.json', 'r', encoding='utf-8') as w:
+        template = json.load(w)
+    with open('rate.json', 'r', encoding='utf-8') as w:
+        rates = json.load(w)
     bot.polling()
