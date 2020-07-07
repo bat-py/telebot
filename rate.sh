@@ -1,2 +1,3 @@
 #!/bin/bash
-python rate.py
+source /home/batpy/telebot/venv/bin/activate
+python /home/batpy/telebot/rate.py

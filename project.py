@@ -226,8 +226,8 @@ def text_handler(message):
 
 
 if __name__ == "__main__":
-    with open('template.json', 'r', encoding='utf-8') as w:
+    with open('/home/batpy/telebot/template.json', 'r', encoding='utf-8') as w:
         template = json.load(w)
-    with open('rate.json', 'r', encoding='utf-8') as w:
+    with open('/home/batpy/telebot/rate.json', 'r', encoding='utf-8') as w:
         rates = json.load(w)
     bot.polling()

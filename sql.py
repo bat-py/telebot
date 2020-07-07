@@ -10,7 +10,7 @@ class MemberInfo:
         self.lang = str(lang)
         self.uzcard = str(uzcard)
         self.qiwi = str(qiwi)
-        self.connect = sqlite3.connect('members.db')
+        self.connect = sqlite3.connect('/home/batpy/telebot/members.db')
         self.cursor = self.connect.cursor()
         self.non = None
         self.type = type
