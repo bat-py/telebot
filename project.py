@@ -20,7 +20,7 @@ def reply_keyboard_creator(message, *args: list, one_type_keyboard: bool = None,
 
     return keyboard
 
-#Inline_keyboard_Creator                       (вместо args должен передовать только ключи из template. Например: ['main_menu'],['del_uzcard', 'del_qiwi']
+#Inline_keyboard_Creator
 def inline_keyboard_creator(message, *args):
     lang = template[MemberInfo(message.chat.id).get_lang()]
     keyboard = telebot.types.InlineKeyboardMarkup()
