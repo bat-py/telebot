@@ -46,7 +46,7 @@ def writer():
 
 def main():
     try:
-        with open('rate.json', 'r', encoding='utf-8') as w:
+        with open('/home/batpy/telebot/rate.json', 'r', encoding='utf-8') as w:
             pass
     except:
         writer()

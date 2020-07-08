@@ -97,7 +97,7 @@ class MemberInfo:
 #Working applications
     def get_id_working_application(self):
         self.cursor.execute("SELECT id_application FROM working_applications WHERE id = (?)", (self.id,))
-        return self.cursor.fetchone()[0]
+        return self.cursor.fetchone()
 
     def add_working_application(self):
         self.cursor.execute("INSERT INTO working_applications (id, id_application) VALUES(?, ?);", (self.id, self.id_application))
