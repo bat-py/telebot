@@ -43,7 +43,7 @@ def uzcard_to_qiwi(message):
     data = MemberInfo(message.chat.id)
     if check_exist_uzcard_qiwi(message):
         check_id_application(message)
-        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()}\n{lang['from']}  UzCard\n{lang['to']}  Qiwi RUB\nUzCard:  {data.get_uzcard()}\nQiwi:  +{data.get_qiwi()}"
+        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()[0]}\n{lang['from']}  UzCard\n{lang['to']}  Qiwi RUB\nUzCard:  {data.get_uzcard()}\nQiwi:  +{data.get_qiwi()}"
         key = inline_keyboard_creator(message, ['sum_from_uzcard'], ['rub_to_qiwi'], ['cancel'])
         bot.send_message(message.chat.id, msg, reply_markup=key)
 
@@ -54,7 +54,7 @@ def qiwi_to_uzcard(message):
     data = MemberInfo(message.chat.id)
     if check_exist_uzcard_qiwi(message):
         check_id_application(message)
-        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()}\n{lang['from']} Qiwi RUB\n{lang['to']} UzCard\nQiwi:  +{data.get_qiwi()}\nUZCard:  {data.get_uzcard()}"
+        msg = f"{lang['application']}\n🆔: {data.get_id_working_application()[0]}\n{lang['from']} Qiwi RUB\n{lang['to']} UzCard\nQiwi:  +{data.get_qiwi()}\nUZCard:  {data.get_uzcard()}"
         key = inline_keyboard_creator(message, ['rub_from_qiwi'],['sum_to_uzcard'], ['cancel'])
         bot.send_message(message.chat.id, msg, reply_markup=key)
 
