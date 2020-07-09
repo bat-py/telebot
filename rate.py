@@ -38,7 +38,7 @@ def writer():
         uzcard_to_qiwi = get_rate_1(html1.text)
         qiwi_to_uzcard = get_rate_2(html2.text)
         rates = [uzcard_to_qiwi, qiwi_to_uzcard, time.asctime()]
-        with open('/home/batpy/telebot/rate.json', 'w', encoding='utf-8') as w:
+        with open('/home/crow/PycharmProjects/telebot/rate.json', 'w', encoding='utf-8') as w:
             json.dump(rates, w, ensure_ascii=False)
     else:
         time.sleep(30)
@@ -46,7 +46,7 @@ def writer():
 
 def main():
     try:
-        with open('/home/batpy/telebot/rate.json', 'r', encoding='utf-8') as w:
+        with open('/home/crow/PycharmProjects/telebot/rate.json', 'r', encoding='utf-8') as w:
             pass
     except:
         writer()
