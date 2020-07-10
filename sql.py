@@ -3,20 +3,22 @@ import sqlite3
 import random
 
 class MemberInfo:
-    def __init__(self, id, first_name=None, username=None, lang=None, uzcard=None, qiwi=None, id_application=None, type=None, rubl=None, sum=None):
+    def __init__(self, id, first_name=None, username=None, lang=None, uzcard=None, qiwi=None, id_application=None, type=None, rubl=None, sum=None, time=None, kurs=None):
         self.id = str(id)
         self.first_name = str(first_name)
         self.username = username
         self.lang = str(lang)
         self.uzcard = str(uzcard)
         self.qiwi = str(qiwi)
-        self.connect = sqlite3.connect('/home/crow/PycharmProjects/telebot/members.db')
+        self.connect = sqlite3.connect('/home/batpy/telebot/members.db')
         self.cursor = self.connect.cursor()
         self.non = None
         self.type = type
         self.id_application = id_application
         self.rubl = rubl
         self.sum = sum
+        self.time = time
+        self.kurs = kurs
 #Methods for add data
     def add_id(self):
         self.cursor.execute(f"INSERT INTO members_info(id) VALUES({self.id});")
@@ -102,9 +104,6 @@ class MemberInfo:
         return self.cursor.fetchone()
 
 
-    def add_application(self):
-        self.cursor.execute("INSERT INTO applications (id, id_applicaion) VALUES (?, ?);", (self.id, self.id_application))
-        self.connect.commit()
 
 
 
@@ -129,3 +128,19 @@ class MemberInfo:
     def get_summa_uzs_rubl(self):
         self.cursor.execute("SELECT sum, rubl FROM working_applications WHERE id = (?)", (self.id,))
         return self.cursor.fetchone()
+
+    def get_type_change(self):
+        self.cursor.execute("SELECT type_change FROM working_applications WHERE id = (?)", (self.id, ))
+        return self.cursor.fetchone()[0]
+
+    def get_working_applications(self):
+        self.cursor.execute("SELECT * FROM working_applications WHERE id = (?);", (self.id, ))
+        return self.cursor.fetchone()
+
+    def del_working_applications(self):
+        self.cursor.execute("DELETE FROM working_applications WHERE id = (?);", (self.id, ))
+        self.connect.commit()
+
+    def close_application(self):
+        self.cursor.execute("INSERT INTO applications VALUES (?, ?, ?, ?, ?, ?, ?)", (self.id_application, self.id, self.time, self.sum, self.rubl, self.kurs, self.type ))
+        self.connect.commit()
